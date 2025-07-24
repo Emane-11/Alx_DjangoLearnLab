@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from .models import Book
+from django.contrib.auth import login
+
 
 def list_books(request):
     books = Book.objects.all()
@@ -28,12 +30,13 @@ class RegisterView(View):
         return render(request, 'relationship_app/register.html', {'form': form})
 
     def post(self, request):
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('login')
-        return render(request, 'relationship_app/register.html', {'form': form})
-    
+    form = UserCreationForm(request.POST)
+    if form.is_valid():
+        user = form.save()
+        login(request, user)  # Log the user in immediately after registration
+        return redirect('list_books')  # Or any other success page
+    return render(request, 'relationship_app/register.html', {'form': form})
+
 
 from django.contrib.auth.views import LogoutView
 
