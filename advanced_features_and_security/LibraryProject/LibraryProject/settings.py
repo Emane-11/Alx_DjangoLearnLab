@@ -16,14 +16,27 @@ SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 
-# Use HTTPS-only cookies (enable only if using HTTPS)
+# Redirect all HTTP traffic to HTTPS to secure data in transit
+SECURE_SSL_REDIRECT = True
+
+# Ensure session and CSRF cookies are only sent over HTTPS connections
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 
-# Optional: HSTS (enable only with HTTPS)
+# HSTS settings instruct browsers to always use HTTPS for this domain for 1 year,
+# including all subdomains and allow preloading by browsers
 SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
+
+# Prevent site from being rendered in a frame (clickjacking protection)
+X_FRAME_OPTIONS = 'DENY'
+
+# Prevent content type sniffing by browsers
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Enable browser's built-in XSS filter
+SECURE_BROWSER_XSS_FILTER = True
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -110,3 +123,5 @@ CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = ("'self'",)
 CSP_STYLE_SRC = ("'self'",)
 CSP_FONT_SRC = ("'self'",)
+
+
