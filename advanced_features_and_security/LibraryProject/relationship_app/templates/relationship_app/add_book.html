@@ -1,5 +1,15 @@
-<form method="post">
+<!-- 
+ this is the old form
+ 
+ <form method="post">
   {% csrf_token %}
   {{ form.as_p }}
   <button type="submit">Save</button>
+</form> -->
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit</button>
 </form>
+

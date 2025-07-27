@@ -8,8 +8,22 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-=!$_5fbhe^h2jq&rphym@=@qm*ntk7w#gwren3maa1mp-2uyp='
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = []
+
+# Security Headers
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+
+# Use HTTPS-only cookies (enable only if using HTTPS)
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+# Optional: HSTS (enable only with HTTPS)
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -19,7 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bookshelf',
-    'relationship_app',  # keep this
+    'relationship_app',  
 ]
 
 MIDDLEWARE = [
@@ -86,3 +100,13 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
+INSTALLED_APPS += ['csp']
+
+MIDDLEWARE += [
+    'csp.middleware.CSPMiddleware',
+]
+
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'",)
+CSP_FONT_SRC = ("'self'",)

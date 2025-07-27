@@ -40,4 +40,7 @@ def delete_book(request, pk):
         return redirect('book_list')
     return render(request, 'bookshelf/book_confirm_delete.html', {'book': book})
 
-
+def search_books(request):
+    query = request.GET.get("q", "")
+    results = Book.objects.filter(title__icontains=query)  # ORM prevents SQLi
+    return render(request, "bookshelf/book_list.html", {"results": results})
