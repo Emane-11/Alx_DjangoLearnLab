@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Book List</h1>
+
+  {% if books %}
+    <ul>
+      {% for book in books %}
+        <li>
+          <strong>{{ book.title|escape }}</strong> by {{ book.author|escape }}
+          <p>{{ book.description|linebreaksbr }}</p>
+
+          <!-- Example delete form with CSRF protection -->
+          <form action="{% url 'delete_book' book.id %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Delete</button>
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No books found.</p>
+  {% endif %}
+
+  <a href="{% url 'add_book' %}">Add a new book</a>
+{% endblock %}
