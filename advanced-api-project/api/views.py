@@ -9,7 +9,7 @@ def author_list(request):
     serializer = AuthorSerializer(authors, many=True)
     return Response(serializer.data)
 
-
+from django_filters import rest_framework
 from rest_framework import generics, permissions, filters
 from .models import Book
 from .serializers import BookSerializer
