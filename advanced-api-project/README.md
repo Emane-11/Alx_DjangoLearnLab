@@ -20,3 +20,13 @@ GET /api/books/?search=keyword
 ### Ordering
 GET /api/books/?ordering=title
 GET /api/books/?ordering=-publication_year
+
+### Running Tests
+To run the API unit tests:
+    python manage.py test api
+
+Tests cover:
+- CRUD operations for Book model
+- Filtering, searching, and ordering
+- Permissions: authenticated vs unauthenticated access
+- Data validation and correct status codes
