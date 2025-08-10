@@ -8,3 +8,15 @@
 Permissions:
 - Unauthenticated users → Read only.
 - Authenticated users → Create, update, delete.
+
+### Filtering
+GET /api/books/?title=BookTitle
+GET /api/books/?author=1
+GET /api/books/?publication_year=2023
+
+### Searching
+GET /api/books/?search=keyword
+
+### Ordering
+GET /api/books/?ordering=title
+GET /api/books/?ordering=-publication_year
