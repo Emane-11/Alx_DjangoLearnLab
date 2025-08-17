@@ -68,7 +68,9 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return self.request.user == post.author
     
 # Post by tag
+from django.shortcuts import render, get_object_or_404
 from taggit.models import Tag
+
 
 def posts_by_tag(request, tag_slug):
     tag = get_object_or_404(Tag, slug=tag_slug)
@@ -87,7 +89,6 @@ from django.views.generic import CreateView
 from .models import Comment
 from .forms import CommentForm
 from django.shortcuts import get_object_or_404
-from .models import Post
 from django.views.generic.edit import UpdateView, DeleteView
 
 
