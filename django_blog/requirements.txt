@@ -1,0 +1,11 @@
+Django>=4.2,<5.0
+django-taggit>=2.0
+pymysql>=1.1.0
+
+Notes:
+Django>=4.2,<5.0: Ensures compatibility with Django 4.x features.
+
+django-taggit>=2.0: Required for tagging functionality.
+
+pymysql>=1.1.0: Needed if you plan to use MySQL as your database backend.
+

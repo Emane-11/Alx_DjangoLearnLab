@@ -66,6 +66,17 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         post = self.get_object()
         return self.request.user == post.author
+    
+# Post by tag
+from taggit.models import Tag
+
+def posts_by_tag(request, tag_slug):
+    tag = get_object_or_404(Tag, slug=tag_slug)
+    posts = Post.objects.filter(tags__in=[tag])
+    return render(request, "blog/posts_by_tag.html", {"posts": posts, "tag": tag})
+
+
+
 
 '''Comment Views '''
 
@@ -117,3 +128,13 @@ class CommentDeleteView(LoginRequiredMixin, DeleteView):
     def get_queryset(self):
         return Comment.objects.filter(author=self.request.user)
 
+
+# Search View
+from django.db.models import Q
+
+def post_search(request):
+    query = request.GET.get('q')
+    results = Post.objects.filter(
+        Q(title__icontains=query) | Q(content__icontains=query) | Q(tags__name__icontains=query)
+    ).distinct()
+    return render(request, "blog/post_search.html", {"results": results, "query": query})
