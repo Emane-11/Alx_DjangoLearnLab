@@ -6,3 +6,20 @@
   <a href="{% url 'post_update' object.pk %}">Edit</a>
   <a href="{% url 'post_delete' object.pk %}">Delete</a>
 {% endif %}
+
+<h3>Comments</h3>
+{% for comment in object.comments.all %}
+  <p><strong>{{ comment.author.username }}</strong>: {{ comment.content }}</p>
+  {% if user == comment.author %}
+    <a href="{% url 'comment_update' comment.pk %}">Edit</a>
+    <a href="{% url 'comment_delete' comment.pk %}">Delete</a>
+  {% endif %}
+{% empty %}
+  <p>No comments yet.</p>
+{% endfor %}
+
+{% if user.is_authenticated %}
+  <a href="{% url 'add_comment' object.pk %}">Add Comment</a>
+{% else %}
+  <p><a href="{% url 'login' %}">Login</a> to comment.</p>
+{% endif %}
