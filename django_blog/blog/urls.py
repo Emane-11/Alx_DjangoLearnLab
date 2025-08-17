@@ -12,6 +12,7 @@ urlpatterns = [
 
 from django.urls import path
 from .views import (
+    PostByTagListView,
     PostListView,
     PostDetailView,
     PostCreateView,
@@ -25,12 +26,14 @@ from .views import (
 
 urlpatterns = [
     # Post URLs
-    path('', PostListView.as_view(), name='post_list'),
-    path('post/<int:pk>/', PostDetailView.as_view(), name='post_detail'),
-    path('post/new/', PostCreateView.as_view(), name='post_create'),
-    path('post/<int:pk>/update/', PostUpdateView.as_view(), name='post_update'),
-    path('post/<int:pk>/delete/', PostDeleteView.as_view(), name='post_delete'),
-    path("tags/<slug:tag_slug>/", views.posts_by_tag, name="posts_by_tag"),
+     path('posts/', PostListView.as_view(), name='post_list'),
+    path('posts/new/', PostCreateView.as_view(), name='post_create'),
+    path('posts/<int:pk>/', PostDetailView.as_view(), name='post_detail'),
+    path('posts/<int:pk>/edit/', PostUpdateView.as_view(), name='post_edit'),
+    path('posts/<int:pk>/delete/', PostDeleteView.as_view(), name='post_delete'),
+
+    # Tag view
+    path('tags/<slug:tag_slug>/', PostByTagListView.as_view(), name='posts_by_tag'),
 
     # Comment URLs
     path('post/<int:pk>/comments/new/', CommentCreateView.as_view(), name='comment_create'),  # create
@@ -42,4 +45,7 @@ urlpatterns = [
 urlpatterns += [
     path("search/", post_search, name="post_search"),
 ]
+
+
+
 

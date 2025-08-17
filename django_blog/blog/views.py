@@ -68,16 +68,24 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return self.request.user == post.author
     
 # Post by tag
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from taggit.models import Tag
 
+class PostByTagListView(ListView):
+    template_name = "blog/posts_by_tag.html"
+    context_object_name = "posts"
 
-def posts_by_tag(request, tag_slug):
-    tag = get_object_or_404(Tag, slug=tag_slug)
-    posts = Post.objects.filter(tags__in=[tag])
-    return render(request, "blog/posts_by_tag.html", {"posts": posts, "tag": tag})
+    def get_queryset(self):
+        # Get the tag based on the URL slug
+        self.tag = get_object_or_404(Tag, slug=self.kwargs['tag_slug'])
+        # Return posts that have this tag
+        return Post.objects.filter(tags__in=[self.tag])
 
-
+    def get_context_data(self, **kwargs):
+        # Add the tag to the context
+        context = super().get_context_data(**kwargs)
+        context['tag'] = self.tag
+        return context
 
 
 '''Comment Views '''
