@@ -69,27 +69,33 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 '''Comment Views '''
 
-from django.shortcuts import get_object_or_404
+
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
+from .models import Comment
+from .forms import CommentForm
+from django.shortcuts import get_object_or_404
+from .models import Post
 from django.views.generic.edit import UpdateView, DeleteView
-from .forms import CommentForm 
-from tokenize import Comment
+
 
 # Add comment to a post
-@login_required
-def add_comment(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
-    if request.method == "POST":
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.author = request.user
-            comment.post = post
-            comment.save()
-            return redirect(post.get_absolute_url())
-    else:
-        form = CommentForm()
-    return render(request, "blog/add_comment.html", {"form": form})
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = "blog/add_comment.html"
+
+    def form_valid(self, form):
+        post_id = self.kwargs.get('post_id')
+        post = get_object_or_404(Post, id=post_id)
+        form.instance.author = self.request.user
+        form.instance.post = post
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        post_id = self.kwargs.get('post_id')
+        return reverse_lazy('post_detail', kwargs={'pk': post_id})
 
 # Update comment
 class CommentUpdateView(LoginRequiredMixin, UpdateView):
