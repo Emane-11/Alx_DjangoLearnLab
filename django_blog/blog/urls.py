@@ -9,7 +9,7 @@ urlpatterns = [
     path("profile/", views.profile_view, name="profile"),
 ]
 
-# Post URLs
+
 from django.urls import path
 from .views import (
     PostListView,
@@ -17,21 +17,21 @@ from .views import (
     PostCreateView,
     PostUpdateView,
     PostDeleteView,
+    CommentCreateView,
+    CommentUpdateView,
+    CommentDeleteView,
 )
 
 urlpatterns = [
+    # Post URLs
     path('', PostListView.as_view(), name='post_list'),
     path('post/<int:pk>/', PostDetailView.as_view(), name='post_detail'),
-    path('post/new/', PostCreateView.as_view(), name='post_create'),        # Create
-    path('post/<int:pk>/update/', PostUpdateView.as_view(), name='post_update'),  # Update
-    path('post/<int:pk>/delete/', PostDeleteView.as_view(), name='post_delete'),  # Delete
-]
+    path('post/new/', PostCreateView.as_view(), name='post_create'),
+    path('post/<int:pk>/update/', PostUpdateView.as_view(), name='post_update'),
+    path('post/<int:pk>/delete/', PostDeleteView.as_view(), name='post_delete'),
 
-# Comment URLs
-from .views import CommentCreateView, CommentUpdateView, CommentDeleteView
-
-urlpatterns += [
-    path("posts/<int:post_id>/comments/new/", CommentCreateView.as_view(), name="comment_create"), # Create
-    path("comments/<int:pk>/edit/", CommentUpdateView.as_view(), name="comment_update"), # Update
-    path("comments/<int:pk>/delete/", CommentDeleteView.as_view(), name="comment_delete"), # Delete
+    # Comment URLs
+    path('post/<int:pk>/comments/new/', CommentCreateView.as_view(), name='comment_create'),  # create
+    path('comment/<int:pk>/update/', CommentUpdateView.as_view(), name='comment_update'),     # update
+    path('comment/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment_delete'),     # delete
 ]
