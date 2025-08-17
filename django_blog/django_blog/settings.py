@@ -132,3 +132,11 @@ STATICFILES_DIRS = [BASE_DIR / "blog" / "static"]
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# After successful login, users will be redirected to the URL pattern named 'profile'
+
+LOGIN_REDIRECT_URL = "profile"
+
+# After logout, users will be redirected to the URL pattern named 'login'
+
+LOGOUT_REDIRECT_URL = "login"
