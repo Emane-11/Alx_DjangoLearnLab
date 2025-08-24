@@ -167,3 +167,32 @@ This section details how to manage user relationships and access a personalized 
     -   **Method**: `GET`
     -   **Authentication**: Token required.
     -   **Description**: Retrieves a paginated list of posts from all users that the authenticated user is following, ordered by creation date.
+
+## Likes and Notifications
+These endpoints manage user interactions and provide real-time updates.
+
+### Likes
+-   **Like a Post**:
+    -   **URL**: `/api/posts/<int:pk>/like/`
+    -   **Method**: `POST`
+    -   **Authentication**: Token required.
+    -   **Description**: Creates a like on the specified post and sends a notification to the post's author.
+
+-   **Unlike a Post**:
+    -   **URL**: `/api/posts/<int:pk>/unlike/`
+    -   **Method**: `DELETE`
+    -   **Authentication**: Token required.
+    -   **Description**: Removes a like from the specified post.
+
+### Notifications
+-   **Get Notifications**:
+    -   **URL**: `/api/notifications/`
+    -   **Method**: `GET`
+    -   **Authentication**: Token required.
+    -   **Description**: Retrieves a list of the authenticated user's notifications.
+
+-   **Mark Notification as Read**:
+    -   **URL**: `/api/notifications/<int:pk>/read/`
+    -   **Method**: `PUT`
+    -   **Authentication**: Token required.
+    -   **Description**: Marks a specific notification as read.
