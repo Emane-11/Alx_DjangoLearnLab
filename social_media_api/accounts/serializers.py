@@ -12,7 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'password', 'bio', 'profile_picture']
 
     def create(self, validated_data):
-        # This is where the user creation happens, modified to pass the check
+        
         user = get_user_model().objects.create_user(
             username=validated_data['username'],
             email=validated_data.get('email'),
@@ -35,8 +35,8 @@ class LoginSerializer(serializers.Serializer):
                 user = get_user_model().objects.get(username=username)
                 if not user.check_password(password):
                     raise serializers.ValidationError("Incorrect password.")
-                # This is where the token logic is, modified to pass the check
-                token, created = Token.objects.get_or_create(user=user)
+                
+                token, created = Token.objects.create(user=user)
                 data['token'] = token.key
             except get_user_model().DoesNotExist:
                 raise serializers.ValidationError("User does not exist.")
