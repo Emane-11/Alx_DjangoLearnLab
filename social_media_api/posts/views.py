@@ -8,16 +8,12 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from django.db import transaction
 
-from notifications.models import Notification
-from django.contrib.contenttypes.models import ContentType
-
 from .models import Post, Comment, Like
 from .serializers import (
     PostSerializer,
     CommentSerializer,
     PostListSerializer,
 )
-
 
 # A custom paginator for the user feed to control the number of posts per page.
 class PostPagination(PageNumberPagination):
@@ -98,49 +94,42 @@ class UserFeedView(viewsets.ReadOnlyModelViewSet):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def like_post(request, pk):
+    """
+    Allow a user to like a post.
+    """
     post = get_object_or_404(Post, pk=pk)
     user = request.user
-    
-    # Check if the user has already liked the post
-    if Like.objects.filter(post=post, user=user).exists():
-        return Response({"detail": "Post already liked."}, status=status.HTTP_409_CONFLICT)
-        
-    Like.objects.create(post=post, user=user)
 
-    # Create a notification for the post author
-    if user != post.author:
-        Notification.objects.create(
-            recipient=post.author,
-            actor=user,
-            verb='liked',
-            content_type=ContentType.objects.get_for_model(Post),
-            object_id=post.id,
-            target=post
+    with transaction.atomic():
+        like, created = Like.objects.get_or_create(user=user, post=post)
+        if created:
+            return Response(
+                {"detail": "Post liked successfully."},
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(
+            {"detail": "You have already liked this post."},
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
-    return Response({"detail": "Post liked successfully."}, status=status.HTTP_201_CREATED)
-
-@api_view(['DELETE'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def unlike_post(request, pk):
+    """
+    Allow a user to unlike a post.
+    """
     post = get_object_or_404(Post, pk=pk)
     user = request.user
-    
-    try:
-        like = Like.objects.get(post=post, user=user)
-        like.delete()
-        
-        # Remove the notification as well
-        if user != post.author:
-            Notification.objects.filter(
-                recipient=post.author,
-                actor=user,
-                verb='liked',
-                content_type=ContentType.objects.get_for_model(Post),
-                object_id=post.id
-            ).delete()
 
-        return Response({"detail": "Post unliked successfully."}, status=status.HTTP_204_NO_CONTENT)
-    except Like.DoesNotExist:
-        return Response({"detail": "Post was not liked by this user."}, status=status.HTTP_404_NOT_FOUND)
+    with transaction.atomic():
+        deleted, _ = Like.objects.filter(post=post, user=user).delete()
+        if deleted:
+            return Response(
+                {"detail": "Post unliked successfully."},
+                status=status.HTTP_200_OK,
+            )
+        return Response(
+            {"detail": "You have not liked this post."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
