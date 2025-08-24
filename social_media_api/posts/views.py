@@ -3,6 +3,8 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.generics import get_object_or_404  
+from notifications.models import Notification  
 
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
@@ -91,6 +93,7 @@ class UserFeedView(viewsets.ReadOnlyModelViewSet):
             return Post.objects.filter(author__in=followed_users).order_by('-created_at')
         return Post.objects.all().order_by('-created_at')
 
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def like_post(request, pk):
@@ -103,6 +106,14 @@ def like_post(request, pk):
     with transaction.atomic():
         like, created = Like.objects.get_or_create(user=user, post=post)
         if created:
+            # Create a notification for the post author (avoid self-notifications)
+            if post.author != user:
+                Notification.objects.create(
+                    recipient=post.author,
+                    actor=user,
+                    verb="liked your post",
+                    target=post,
+                )
             return Response(
                 {"detail": "Post liked successfully."},
                 status=status.HTTP_201_CREATED,
