@@ -19,7 +19,7 @@ Ensure you have Python and `pip` installed.
 
 1.  **Clone the Repository**:
     ```bash
-    git clone [https://github.com/Alx_DjangoLearnLab/social_media_api.git](https://github.com/Alx_DjangoLearnLab/social_media_api.git)
+    git clone [https://github.com/Emane-11/Alx_DjangoLearnLab.git](https://github.com/Emane-11/Alx_DjangoLearnLab.git)
     cd social_media_api
     ```
 
