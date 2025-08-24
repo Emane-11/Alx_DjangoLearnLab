@@ -141,3 +141,29 @@ The `posts` app provides functionality for creating, managing, and interacting w
     -   **URL**: `/api/posts/<post_id>/comments/<id>/`
     -   **Method**: `GET`, `PUT`, `PATCH`, `DELETE`
     -   **Authentication**: Required for all methods. `PUT`, `PATCH`, `DELETE` are restricted to the comment's author.
+
+## User Follows & Feed Functionality
+
+This section details how to manage user relationships and access a personalized post feed.
+
+### User Follow Endpoints
+
+-   **Follow a User**:
+    -   **URL**: `/api/auth/follow/<user_id>/`
+    -   **Method**: `POST`
+    -   **Authentication**: Token required.
+    -   **Description**: Follows the user with the specified `user_id`.
+
+-   **Unfollow a User**:
+    -   **URL**: `/api/auth/unfollow/<user_id>/`
+    -   **Method**: `POST`
+    -   **Authentication**: Token required.
+    -   **Description**: Unfollows the user with the specified `user_id`.
+
+### Personalized Feed
+
+-   **Access User Feed**:
+    -   **URL**: `/api/feed/`
+    -   **Method**: `GET`
+    -   **Authentication**: Token required.
+    -   **Description**: Retrieves a paginated list of posts from all users that the authenticated user is following, ordered by creation date.
