@@ -112,3 +112,32 @@ You can use Postman or a similar API testing tool to interact with the endpoints
 1.  **Register**: Send a `POST` request to `/api/auth/register/` with user details.
 2.  **Login**: Send a `POST` request to `/api/auth/login/` with the username and password to get a token.
 3.  **Authenticate**: Use the received token for accessing protected endpoints like `/api/auth/profile/` by setting the `Authorization` header.
+
+## API Endpoints for Posts and Comments
+
+The `posts` app provides functionality for creating, managing, and interacting with posts and comments.
+
+### Posts Endpoints
+
+-   **List and Create Posts**:
+    -   **URL**: `/api/posts/`
+    -   **Method**: `GET` (List all posts, paginated) or `POST` (Create a new post)
+    -   **Authentication**: `GET` is public, `POST` requires a valid token.
+    -   **Filtering**: Supports searching by title or content (`?search=<query>`) and filtering by author (`?author=<user_id>`).
+
+-   **Retrieve, Update, and Delete a Post**:
+    -   **URL**: `/api/posts/<id>/`
+    -   **Method**: `GET`, `PUT`, `PATCH`, `DELETE`
+    -   **Authentication**: Required for all methods. `PUT`, `PATCH`, `DELETE` are restricted to the post's author.
+
+### Comments Endpoints
+
+-   **List and Create Comments**:
+    -   **URL**: `/api/posts/<post_id>/comments/`
+    -   **Method**: `GET` (List comments for a specific post) or `POST` (Create a new comment)
+    -   **Authentication**: `GET` is public, `POST` requires a valid token.
+
+-   **Retrieve, Update, and Delete a Comment**:
+    -   **URL**: `/api/posts/<post_id>/comments/<id>/`
+    -   **Method**: `GET`, `PUT`, `PATCH`, `DELETE`
+    -   **Authentication**: Required for all methods. `PUT`, `PATCH`, `DELETE` are restricted to the comment's author.
