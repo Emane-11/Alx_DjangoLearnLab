@@ -7,6 +7,7 @@ from rest_framework.generics import get_object_or_404
 from notifications.models import Notification  
 
 from django.shortcuts import get_object_or_404
+from rest_framework import permissions, generics
 from django.db.models import Count
 from django.db import transaction
 
@@ -95,22 +96,21 @@ class UserFeedView(viewsets.ReadOnlyModelViewSet):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([permissions.IsAuthenticated])  
 def like_post(request, pk):
     """
     Allow a user to like a post.
     """
-    post = get_object_or_404(Post, pk=pk)
+    post = generics.get_object_or_404(Post, pk=pk)  
     user = request.user
 
     with transaction.atomic():
-        like, created = Like.objects.get_or_create(user=user, post=post)
+        like, created = Like.objects.get_or_create(user=request.user, post=post)  
         if created:
-            # Create a notification for the post author (avoid self-notifications)
-            if post.author != user:
+            if post.author != request.user:
                 Notification.objects.create(
                     recipient=post.author,
-                    actor=user,
+                    actor=request.user,
                     verb="liked your post",
                     target=post,
                 )
