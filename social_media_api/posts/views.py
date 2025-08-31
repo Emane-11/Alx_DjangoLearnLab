@@ -1,6 +1,5 @@
-from rest_framework import viewsets, mixins, status
+from rest_framework import viewsets, mixins, status, permissions
 from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 
@@ -21,6 +20,7 @@ class PostPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 100
 
+
 class PostViewSet(
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
@@ -33,7 +33,7 @@ class PostViewSet(
     It supports creating, retrieving, updating, and deleting posts.
     """
     queryset = Post.objects.all().annotate(like_count=Count('likes'))
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -59,13 +59,14 @@ class PostViewSet(
         serializer = PostListSerializer(queryset, many=True, context={'request': request})
         return Response(serializer.data)
 
+
 class CommentViewSet(viewsets.ModelViewSet):
     """
     A ViewSet for managing comments on a post.
     """
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         """
@@ -73,34 +74,34 @@ class CommentViewSet(viewsets.ModelViewSet):
         """
         serializer.save(author=self.request.user)
 
+
 class UserFeedView(viewsets.ReadOnlyModelViewSet):
     """
     A ViewSet for the user's feed, showing posts from users they follow.
     """
     serializer_class = PostListSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [permissions.IsAuthenticated]
     pagination_class = PostPagination
 
     def get_queryset(self):
-    """
-    Get posts from followed users, ordered by creation date.
-    """
-    user = self.request.user
-    following_users = user.following.all()
-    return Post.objects.filter(author__in=following_users).order_by('-created_at')
+        """
+        Get posts from followed users, ordered by creation date.
+        """
+        user = self.request.user
+        following_users = user.following.all()
+        return Post.objects.filter(author__in=following_users).order_by('-created_at')
+
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([permissions.IsAuthenticated])
 def like_post(request, pk):
     """
     Allow a user to like a post.
     """
-    # Check 1: Use get_object_or_404 to get the Post instance
     post = get_object_or_404(Post, pk=pk)
     user = request.user
 
     with transaction.atomic():
-        # Check 2: Use get_or_create to add a like
         like, created = Like.objects.get_or_create(user=user, post=post)
         if created:
             return Response(
@@ -112,13 +113,13 @@ def like_post(request, pk):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
+
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([permissions.IsAuthenticated])
 def unlike_post(request, pk):
     """
     Allow a user to unlike a post.
     """
-    # Check 1: Use get_object_or_404 to get the Post instance
     post = get_object_or_404(Post, pk=pk)
     user = request.user
 
