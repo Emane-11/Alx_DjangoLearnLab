@@ -3,11 +3,8 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.generics import get_object_or_404  
-from notifications.models import Notification  
 
 from django.shortcuts import get_object_or_404
-from rest_framework import permissions, generics
 from django.db.models import Count
 from django.db import transaction
 
@@ -89,31 +86,25 @@ class UserFeedView(viewsets.ReadOnlyModelViewSet):
         Get posts from followed users, or all posts if no users are followed.
         """
         user = self.request.user
-        followed_users = user.following.all()
-        if followed_users.exists():
-            return Post.objects.filter(author__in=followed_users).order_by('-created_at')
+        following_users = user.following.all()
+        if following_users.exists():
+            return Post.objects.filter(author__in=following_users).order_by('-created_at')
         return Post.objects.all().order_by('-created_at')
 
-
 @api_view(['POST'])
-@permission_classes([permissions.IsAuthenticated])  
+@permission_classes([IsAuthenticated])
 def like_post(request, pk):
     """
     Allow a user to like a post.
     """
-    post = generics.get_object_or_404(Post, pk=pk)  
+    # Check 1: Use get_object_or_404 to get the Post instance
+    post = get_object_or_404(Post, pk=pk)
     user = request.user
 
     with transaction.atomic():
-        like, created = Like.objects.get_or_create(user=request.user, post=post)  
+        # Check 2: Use get_or_create to add a like
+        like, created = Like.objects.get_or_create(user=user, post=post)
         if created:
-            if post.author != request.user:
-                Notification.objects.create(
-                    recipient=post.author,
-                    actor=request.user,
-                    verb="liked your post",
-                    target=post,
-                )
             return Response(
                 {"detail": "Post liked successfully."},
                 status=status.HTTP_201_CREATED,
@@ -129,6 +120,7 @@ def unlike_post(request, pk):
     """
     Allow a user to unlike a post.
     """
+    # Check 1: Use get_object_or_404 to get the Post instance
     post = get_object_or_404(Post, pk=pk)
     user = request.user
 
@@ -143,4 +135,3 @@ def unlike_post(request, pk):
             {"detail": "You have not liked this post."},
             status=status.HTTP_400_BAD_REQUEST,
         )
-
