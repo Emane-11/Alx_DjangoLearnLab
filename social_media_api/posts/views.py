@@ -82,14 +82,12 @@ class UserFeedView(viewsets.ReadOnlyModelViewSet):
     pagination_class = PostPagination
 
     def get_queryset(self):
-        """
-        Get posts from followed users, or all posts if no users are followed.
-        """
-        user = self.request.user
-        following_users = user.following.all()
-        if following_users.exists():
-            return Post.objects.filter(author__in=following_users).order_by('-created_at')
-        return Post.objects.all().order_by('-created_at')
+    """
+    Get posts from followed users, ordered by creation date.
+    """
+    user = self.request.user
+    following_users = user.following.all()
+    return Post.objects.filter(author__in=following_users).order_by('-created_at')
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
