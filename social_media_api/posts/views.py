@@ -78,7 +78,7 @@ class UserFeedView(viewsets.ReadOnlyModelViewSet):
     A ViewSet for the user's feed, showing posts from users they follow.
     """
     serializer_class = PostListSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
     pagination_class = PostPagination
 
     def get_queryset(self):
